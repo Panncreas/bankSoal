@@ -3,7 +3,7 @@ const menuList = [
     title: "Beranda",
     path: "/dashboard",
     icon: "home",
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
+    roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR", "ROLE_LECTURE", "ROLE_DUDI", "ROLE_STUDENT"],
   },
   // {
   //   title: "Author Blog",
