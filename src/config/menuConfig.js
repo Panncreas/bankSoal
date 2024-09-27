@@ -163,13 +163,13 @@ const menuList = [
     title: "Master Data",
     path: "/master",
     icon: "database",
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_ADMINISTRATOR" , "ROLE_OPERATOR"],
     children: [
       {
         title: "Jurusan",
         path: "/department",
         icon: "apartment",
-        roles: ["ROLE_ADMINISTRATOR"],
+        roles: ["ROLE_ADMINISTRATOR" , "ROLE_OPERATOR"],
       },
       {
         title: "Prodi",
@@ -232,14 +232,14 @@ const menuList = [
     title: "Dosen",
     path: "/lecture",
     icon: "team",
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"],
   },
 
   {
     title: "Mahasiswa",
     path: "/student",
     icon: "team",
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"],
   },
   {
     title: "List Todo",
@@ -284,7 +284,7 @@ const menuList = [
     title: "Pengguna",
     path: "/user",
     icon: "usergroup-add",
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"],
   },
 
   {

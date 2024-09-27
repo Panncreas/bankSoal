@@ -313,7 +313,7 @@ export default [
   {
     path: "/dashboard",
     component: Dashboard,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
+    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
   },
   {
     path: "/doc",
@@ -410,8 +410,8 @@ export default [
     component: Clipboard,
     roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
   },
-  { path: "/user", component: User, roles: ["ROLE_ADMINISTRATOR"] },
-  { path: "/department", component: Department, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/user", component: User, roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"] },
+  { path: "/department", component: Department, roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR"] },
   {
     path: "/study-program",
     component: StudyProgram,
@@ -424,7 +424,7 @@ export default [
     roles: ["ROLE_ADMINISTRATOR"],
   },
   { path: "/subject", component: Subject, roles: ["ROLE_ADMINISTRATOR"] },
-  { path: "/lecture", component: Lecture, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/lecture", component: Lecture, roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR"] },
   {
     path: "/question-criteria",
     component: QuestionCriteria,
@@ -480,7 +480,7 @@ export default [
     component : ExerciseIndex,
     roles: ["ROLE_ADMINISTRATOR"]
   },
-  { path: "/student", component: Student, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/student", component: Student, roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"] },
   {
     path: "/rps",
     component: RPS,
