@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { PropTypes } from "prop-types";
 import { Upload, Icon, message } from "antd";
-import XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 const { Dragger } = Upload;
 
 const getHeaderRow = (sheet) => {

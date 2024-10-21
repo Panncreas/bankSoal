@@ -112,6 +112,10 @@ const User = Loadable({
   loader: () => import(/*webpackChunkName:'User'*/ "@/views/user"),
   loading: Loading,
 });
+const SchoolProfile = Loadable({
+  loader: () => import(/*webpackChunkName:'SchoolProfile'*/ "@/views/school-profile"),
+  loading: Loading,
+});
 const Question = Loadable({
   loader: () => import(/*webpackChunkName:'Question'*/ "@/views/question"),
   loading: Loading,
@@ -295,6 +299,19 @@ const StudentExerciseReview = Loadable({
     import(/*webpackChunkName:'Exercise'*/ "@/views/student-exercise-review"),
   loading: Loading,
 });
+const BidangKeahlian = Loadable({
+  loader: () => import(/*webpackChunkName:'BidangKeahlian'*/ "@/views/bidang-keahlian"),
+  loading: Loading,
+});
+const ProgramKeahlian = Loadable({
+  loader: () => import(/*webpackChunkName:'ProgramKeahlian'*/ "@/views/program-keahlian"),
+  loading: Loading,
+});
+const KonsentrasiKeahlian = Loadable({
+  loader: () => import(/*webpackChunkName:'KonsentrasiKeahlian'*/ "@/views/konsentrasi-keahlian"),
+  loading: Loading,
+});
+
 const Grade = Loadable({
   loader: () => import(/*webpackChunkName:'Grade'*/ "@/views/grade"),
   loading: Loading,
@@ -313,27 +330,27 @@ export default [
   {
     path: "/dashboard",
     component: Dashboard,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
+    roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR", "ROLE_TEACHER", "ROLE_DUDI", "ROLE_STUDENT"],
   },
   {
     path: "/doc",
     component: Doc,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER", "ROLE_STUDENT"],
   },
   {
     path: "/guide",
     component: Guide,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/permission/explanation",
     component: Explanation,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
   },
   {
     path: "/permission/adminPage",
     component: AdminPage,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
   },
   {
     path: "/permission/guestPage",
@@ -343,214 +360,218 @@ export default [
   {
     path: "/permission/editorPage",
     component: EditorPage,
-    roles: ["ROLE_LECTURE"],
+    roles: [ "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/components/richTextEditor",
     component: RichTextEditor,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/components/Markdown",
     component: Markdown,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/components/draggable",
     component: Draggable,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/charts/keyboard",
     component: KeyboardChart,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/charts/line",
     component: LineChart,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/charts/mix-chart",
     component: MixChart,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/nested/menu1/menu1-1",
     component: Menu1_1,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/nested/menu1/menu1-2/menu1-2-1",
     component: Menu1_2_1,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/table",
     component: Table,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/excel/export",
     component: ExportExcel,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/excel/upload",
     component: UploadExcel,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/zip",
     component: Zip,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/clipboard",
     component: Clipboard,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
-  { path: "/user", component: User, roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"] },
-  { path: "/department", component: Department, roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR"] },
+  { path: "/user", component: User, roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR"] },
+  { path: "/school-profile", component: SchoolProfile, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/bidang-keahlian", component: BidangKeahlian, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/program-keahlian", component: ProgramKeahlian, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/konsentrasi-keahlian", component: KonsentrasiKeahlian, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/department", component: Department, roles: ["ROLE_OPERATOR"] },
   {
     path: "/study-program",
     component: StudyProgram,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
   },
-  { path: "/religion", component: Religion, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/religion", component: Religion, roles: ["ROLE_OPERATOR"] },
   {
     path: "/subject-group",
     component: SubjectGroup,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
   },
-  { path: "/subject", component: Subject, roles: ["ROLE_ADMINISTRATOR"] },
-  { path: "/lecture", component: Lecture, roles: ["ROLE_ADMINISTRATOR", "ROLE_OPERATOR"] },
+  { path: "/subject", component: Subject, roles: ["ROLE_OPERATOR"] },
+  { path: "/lecture", component: Lecture, roles: ["ROLE_OPERATOR"] },
   {
     path: "/question-criteria",
     component: QuestionCriteria,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/team-teaching",
     component: TeamTeaching,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
   },
   {
     path: "/linguistic-value",
     component: LinguiticValue,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/criteria-value",
     component : CriteriaValue,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"]
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"]
   },
   {
     path: "/list-todo",
     component : ListTodo,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"]
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"]
   },
   {
     path: "/list-todo-admin",
     component : ListTodoAdmin,
-    roles: ["ROLE_ADMINISTRATOR"]
+    roles: ["ROLE_OPERATOR"]
   },
   // {
   //   path: "/index/question/:rpsID",
   //   component : QuestionIndex,
-  //   roles: ["ROLE_ADMINISTRATOR"]
+  //   roles: ["ROLE_OPERATOR"]
   // },
   {
     path: "/index/question/quiz1/:rpsID",
     component : QuestionIndexQuiz1,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"]
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"]
   },
   {
     path: "/index/question/quiz2/:rpsID",
     component : QuestionIndexQuiz2,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"]
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"]
   },
   {
     path: "/index/criteria/:questionID",
     component : CriteriaIndex,
-    roles: ["ROLE_ADMINISTRATOR","ROLE_LECTURE"]
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"]
   },
   {
     path: "/index/exercise/:exerciseID",
     component : ExerciseIndex,
-    roles: ["ROLE_ADMINISTRATOR"]
+    roles: ["ROLE_OPERATOR"]
   },
-  { path: "/student", component: Student, roles: ["ROLE_ADMINISTRATOR","ROLE_OPERATOR"] },
+  { path: "/student", component: Student, roles: ["ROLE_OPERATOR"] },
   {
     path: "/rps",
     component: RPS,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI",  "ROLE_TEACHER"],
     exact: true,
   },
   {
     path: "/rps/:rpsID",
     component: RPSDetail,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
     exact: true,
   },
   {
     path: "/question",
     component: Question,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
     exact: true,
   },
   {
     path: "/rps/:rpsID/:rpsDetailID",
     component: Question,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
     exact: true,
   },
   {
     path: "/rps/:rpsID/:rpsDetailID/:questionID",
     component: Answer,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/form-learning",
     component: FormLearning,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/learning-media",
     component: LearningMedia,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/learning-method",
     component: LearningMethod,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/assessment-criteria",
     component: AssessmentCriteria,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/appraisal-form",
     component: AppraisalForm,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-exam",
     component: Exam,
-    roles: ["ROLE_ADMINISTRATOR"],
+    roles: ["ROLE_OPERATOR"],
     exact: true,
   },
   {
     path: "/setting-quiz",
     component: Quiz,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
     exact: true,
   },
   {
     path: "/setting-exercise",
     component: Exercise,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
     exact: true,
   },
   {
@@ -588,55 +609,55 @@ export default [
   {
     path: "/setting-exam/result/:id",
     component: ResultExam,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/result/:id",
     component: ResultQuiz,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz/:id",
     component: QuizGenerateQuiz1,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz-step2/:id",
     component: QuizGenerateQuizStep2,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz-step3/:id",
     component: QuizGenerateQuizStep3,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz-step4/:id",
     component: QuizGenerateQuizStep4,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz-step5/:id",
     component: QuizGenerateQuizStep5,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-quiz/generate-quiz-step6/:id",
     component: QuizGenerateQuizStep6,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
   {
     path: "/setting-exercise/result/:id",
     component: ResultExercise,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER"],
   },
 
-  { path: "/grade", component: Grade, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/grade", component: Grade, roles: ["ROLE_OPERATOR"] },
   {
     path: "/about",
     component: About,
-    roles: ["ROLE_ADMINISTRATOR", "ROLE_LECTURE", "ROLE_STUDENT"],
+    roles: ["ROLE_OPERATOR", "ROLE_DUDI", "ROLE_TEACHER", "ROLE_STUDENT"],
   },
-  { path: "/bug", component: Bug, roles: ["ROLE_ADMINISTRATOR"] },
+  { path: "/bug", component: Bug, roles: ["ROLE_OPERATOR"] },
   { path: "/error/404", component: Error404 },
 ];
