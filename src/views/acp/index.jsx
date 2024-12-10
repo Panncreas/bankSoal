@@ -1,25 +1,24 @@
 import React, { Component } from "react";
 import { Card, Button, Table, message, Upload, Row, Col, Divider, Modal, Input } from "antd";
 import {
-  getMapel,
-  deleteMapel,
-  editMapel,
-  addMapel,
-} from "@/api/mapel";
+  getACP,
+  deleteACP,
+  editACP,
+  addACP,
+} from "@/api/acp";
 import TypingCard from "@/components/TypingCard";
-import EditMapelForm from "./forms/edit-mapel-form";
-import AddMapelForm from "./forms/add-mapel-form";
+import EditACPForm from "./forms/edit-acp-form";
+import AddACPForm from "./forms/add-acp-form";
 import { read, utils } from "xlsx";
-
 const { Column } = Table;
-class Mapel extends Component {
+class ACP extends Component {
   state = {
-    mapels: [],
-    editMapelModalVisible: false,
-    editMapelModalLoading: false,
+    jadwalPelajaran: [],
+    editACPModalVisible: false,
+    editACPModalLoading: false,
     currentRowData: {},
-    addMapelModalVisible: false,
-    addMapelModalLoading: false,
+    addACPModalVisible: false,
+    addACPModalLoading: false,
     importedData: [],
     columnTitles: [],
     fileName: "",
@@ -28,60 +27,52 @@ class Mapel extends Component {
     columnMapping: {},
     searchKeyword: "",
   };
-
-  getMapel = async () => {
-    const result = await getMapel();
+  getACP = async () => {
+    const result = await getACP();
     const { content, statusCode } = result.data;
 
     if (statusCode === 200) {
       this.setState({
-        mapels: content,
+        jadwalPelajaran: content,
       });
     }
   };
-
-  handleEditMapel = (row) => {
+  handleEditACP = (row) => {
     this.setState({
       currentRowData: Object.assign({}, row),
-      editMapelModalVisible: true,
+      editACPModalVisible: true,
     });
   };
 
-  handleDeleteMapel = (row) => {
+  handleDeleteACP = (row) => {
     const { id } = row;
-  
-    // Dialog alert hapus data
-    Modal.confirm({
-      title: "Konfirmasi",
-      content: "Apakah Anda yakin ingin menghapus data ini?",
-      okText: "Ya",
-      okType: "danger",
-      cancelText: "Tidak",
-      onOk: () => {
-        deleteMapel({ id }).then((res) => {
-          message.success("Berhasil dihapus");
-          this.getMapel();
-        });
-      },
+    if (id === "admin") {
+      message.error("不能menghapusoleh  Admin！");
+      return;
+    }
+    console.log(id);
+    deleteACP({ id }).then((res) => {
+      message.success("berhasil dihapus");
+      this.getACP();
     });
   };
 
-  handleEditMapelOk = (_) => {
-    const { form } = this.editMapelFormRef.props;
+  handleEditACPOk = (_) => {
+    const { form } = this.editACPFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
       this.setState({ editModalLoading: true });
-      editMapel(values, values.id)
+      editACP(values, values.id)
         .then((response) => {
           form.resetFields();
           this.setState({
-            editMapelModalVisible: false,
-            editMapelModalLoading: false,
+            editACPModalVisible: false,
+            editACPModalLoading: false,
           });
           message.success("berhasi;!");
-          this.getMapel();
+          this.getACP();
         })
         .catch((e) => {
           message.success("gagal");
@@ -91,40 +82,39 @@ class Mapel extends Component {
 
   handleCancel = (_) => {
     this.setState({
-      editMapelModalVisible: false,
-      addMapelModalVisible: false,
+      editACPModalVisible: false,
+      addACPModalVisible: false,
     });
   };
 
-  handleAddMapel = (row) => {
+  handleAddACP = (row) => {
     this.setState({
-      addMapelModalVisible: true,
+      addACPModalVisible: true,
     });
   };
 
-  handleAddMapelOk = (_) => {
-    const { form } = this.addMapelFormRef.props;
+  handleAddACPOk = (_) => {
+    const { form } = this.addACPFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
-      this.setState({ addMapelModalLoading: true });
-      addMapel(values)
+      this.setState({ addACPModalLoading: true });
+      addACP(values)
         .then((response) => {
           form.resetFields();
           this.setState({
-            addMapelModalVisible: false,
-            addMapelModalLoading: false,
+            addACPModalVisible: false,
+            addACPModalLoading: false,
           });
           message.success("Berhasil!");
-          this.getMapel();
+          this.getACP();
         })
         .catch((e) => {
           message.success("Gagal menambahkan, coba lagi!");
         });
     });
   };
-
   handleImportModalOpen = () => {
     this.setState({ importModalVisible: true });
   };
@@ -184,34 +174,34 @@ class Mapel extends Component {
   };
 
   saveImportedData = async (columnMapping) => {
-    const { importedData, mapels } = this.state;
+    const { importedData, jadwalPelajaran } = this.state;
     let errorCount = 0;
     
     try {
       for (const row of importedData) {
         const dataToSave = {
-          id: row[columnMapping["ID Bidang"]],
-          bidang: row[columnMapping["Nama Bidang Keahlian"]],
-          school_id: row[columnMapping["ID Sekolah"]],
+          id: row[columnMapping["ID Konsentrasi"]],
+          konsentrasi: row[columnMapping["Nama Konsentrasi Keahlian"]],
+          programKeahlian_id: row[columnMapping["ID Program"]],
         };
   
         // Check if data already exists
-        const existingMapelIndex = mapels.findIndex(p => p.id === dataToSave.id);
+        const existingACPIndex = jadwalPelajaran.findIndex(p => p.id === dataToSave.id);
   
         try {
-          if (existingMapelIndex > -1) {
+          if (existingACPIndex > -1) {
             // Update existing data
-            await editMapel(dataToSave, dataToSave.id);
+            await editACP(dataToSave, dataToSave.id);
             this.setState((prevState) => {
-              const updatedMapel = [...prevState.mapels];
-              updatedMapel[existingMapelIndex] = dataToSave;
-              return { mapels: updatedMapel };
+              const updatedACP = [...prevState.jadwalPelajaran];
+              updatedACP[existingACPIndex] = dataToSave;
+              return { jadwalPelajaran: updatedACP };
             });
           } else {
             // Add new data
-            await addMapel(dataToSave);
+            await addACP(dataToSave);
             this.setState((prevState) => ({
-              mapels: [...prevState.mapels, dataToSave],
+              jadwalPelajaran: [...prevState.jadwalPelajaran, dataToSave],
             }));
           }
         } catch (error) {
@@ -236,41 +226,45 @@ class Mapel extends Component {
       });
     }
   };
-
   componentDidMount() {
-    this.getMapel();
+    this.getACP();
   }
-
   render() {
-    const { importModalVisible, mapels } = this.state;
+    const { jadwalPelajaran, importModalVisible } = this.state;
     const title = (
       <Row gutter={[16, 16]} justify="start" style={{paddingLeft: 9}}>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
-          <Button type="primary" onClick={this.handleAddMapel}>
-            Tambahkan Mapel
+          <Button type="primary" onClick={this.handleAddACP}>
+            Tambahkan Analisa Capaian Pembelajaran
           </Button>
         </Col>
-        <Col xs={24} sm={12} md={8} lg={6} xl={6}>
+        <Col xs={30} sm={20} md={20} lg={20} xl={20}>
           <Button  onClick={this.handleImportModalOpen}>
             Import File
           </Button>
         </Col>
       </Row>
     );
-    const cardContent = `Di sini, Anda dapat mengelola bidang keahlian di sistem, seperti menambahkan bidang keahlian baru, atau mengubah bidang keahlian yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola Analisa Capaian Pembelajaran di sistem, seperti menambahkan Analisa Capaian Pembelajaran baru, atau mengubah Analisa Capaian Pembelajaran yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Mapel" source={cardContent} />
+        <TypingCard title="Manajemen Analisa Capaian Pembelajaran" source={cardContent} />
         <br />
         <Card title={title}>
           <Table
             bordered
             rowKey="id"
-            dataSource={mapels}
+            dataSource={jadwalPelajaran}
             pagination={{ pageSize: 10 }}
           >
-            <Column title="ID Mapel" dataIndex="idMapel" key="idMapel" align="center" />
-            <Column title="Nama Mapel" dataIndex="name" key="name" align="center" />
+            
+            <Column title="Kode" dataIndex="lecture.name" key="lecture.name" align="center" />
+            <Column title="Tahun Ajaran" dataIndex="jabatan" key="jabatan" align="center" />
+            <Column title="Jurusan" dataIndex="mapel.name" key="mapel.name" align="center" />
+            <Column title="Kelas" dataIndex="jmlJam" key="jmlJam" align="center" />
+            <Column title="Semester" dataIndex="jmlJam" key="jmlJam" align="center" />
+            <Column title="Mapel" dataIndex="jmlJam" key="jmlJam" align="center" />
+            <Column title="Capaian Pembelajaran" dataIndex="jmlJam" key="jmlJam" align="center" />
             {/* <Column
               title="Operasi"
               key="action"
@@ -283,7 +277,7 @@ class Mapel extends Component {
                     shape="circle"
                     icon="edit"
                     title="mengedit"
-                    onClick={this.handleEditMapel.bind(null, row)}
+                    onClick={this.handleEditACP.bind(null, row)}
                   />
                   <Divider type="vertical" />
                   <Button
@@ -291,31 +285,31 @@ class Mapel extends Component {
                     shape="circle"
                     icon="delete"
                     title="menghapus"
-                    onClick={this.handleDeleteMapel.bind(row)}
+                    onClick={this.handleDeleteACP.bind(null, row)}
                   />
                 </span>
               )}
             /> */}
           </Table>
         </Card>
-        <EditMapelForm
+        <EditACPForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={(formRef) =>
-            (this.editMapelFormRef = formRef)
+            (this.editACPFormRef = formRef)
           }
-          visible={this.state.editMapelModalVisible}
-          confirmLoading={this.state.editMapelModalLoading}
+          visible={this.state.editACPModalVisible}
+          confirmLoading={this.state.editACPModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleEditMapelOk}
+          onOk={this.handleEditACPOk}
         />
-        <AddMapelForm
+        <AddACPForm
           wrappedComponentRef={(formRef) =>
-            (this.addMapelFormRef = formRef)
+            (this.addACPFormRef = formRef)
           }
-          visible={this.state.addMapelModalVisible}
-          confirmLoading={this.state.addMapelModalLoading}
+          visible={this.state.addACPModalVisible}
+          confirmLoading={this.state.addACPModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleAddMapelOk}
+          onOk={this.handleAddACPOk}
         />
         <Modal
           title="Import File"
@@ -344,4 +338,4 @@ class Mapel extends Component {
   }
 }
 
-export default Mapel;
+export default ACP;

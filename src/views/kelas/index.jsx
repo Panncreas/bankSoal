@@ -1,25 +1,24 @@
 import React, { Component } from "react";
 import { Card, Button, Table, message, Upload, Row, Col, Divider, Modal, Input } from "antd";
 import {
-  getMapel,
-  deleteMapel,
-  editMapel,
-  addMapel,
-} from "@/api/mapel";
+  getKelas,
+  deleteKelas,
+  editKelas,
+  addKelas,
+} from "@/api/kelas";
 import TypingCard from "@/components/TypingCard";
-import EditMapelForm from "./forms/edit-mapel-form";
-import AddMapelForm from "./forms/add-mapel-form";
+import EditKelasForm from "./forms/edit-kelas-form";
+import AddKelasForm from "./forms/add-kelas-form";
 import { read, utils } from "xlsx";
-
 const { Column } = Table;
-class Mapel extends Component {
+class Kelas extends Component {
   state = {
-    mapels: [],
-    editMapelModalVisible: false,
-    editMapelModalLoading: false,
+    kelas: [],
+    editKelasModalVisible: false,
+    editKelasModalLoading: false,
     currentRowData: {},
-    addMapelModalVisible: false,
-    addMapelModalLoading: false,
+    addKelasModalVisible: false,
+    addKelasModalLoading: false,
     importedData: [],
     columnTitles: [],
     fileName: "",
@@ -28,60 +27,52 @@ class Mapel extends Component {
     columnMapping: {},
     searchKeyword: "",
   };
-
-  getMapel = async () => {
-    const result = await getMapel();
+  getKelas = async () => {
+    const result = await getKelas();
     const { content, statusCode } = result.data;
 
     if (statusCode === 200) {
       this.setState({
-        mapels: content,
+        kelas: content,
       });
     }
   };
-
-  handleEditMapel = (row) => {
+  handleEditKelas = (row) => {
     this.setState({
       currentRowData: Object.assign({}, row),
-      editMapelModalVisible: true,
+      editKelasModalVisible: true,
     });
   };
 
-  handleDeleteMapel = (row) => {
+  handleDeleteKelas = (row) => {
     const { id } = row;
-  
-    // Dialog alert hapus data
-    Modal.confirm({
-      title: "Konfirmasi",
-      content: "Apakah Anda yakin ingin menghapus data ini?",
-      okText: "Ya",
-      okType: "danger",
-      cancelText: "Tidak",
-      onOk: () => {
-        deleteMapel({ id }).then((res) => {
-          message.success("Berhasil dihapus");
-          this.getMapel();
-        });
-      },
+    if (id === "admin") {
+      message.error("不能menghapusoleh  Admin！");
+      return;
+    }
+    console.log(id);
+    deleteKelas({ id }).then((res) => {
+      message.success("berhasil dihapus");
+      this.getKelas();
     });
   };
 
-  handleEditMapelOk = (_) => {
-    const { form } = this.editMapelFormRef.props;
+  handleEditKelasOk = (_) => {
+    const { form } = this.editKelasFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
       this.setState({ editModalLoading: true });
-      editMapel(values, values.id)
+      editKelas(values, values.id)
         .then((response) => {
           form.resetFields();
           this.setState({
-            editMapelModalVisible: false,
-            editMapelModalLoading: false,
+            editKelasModalVisible: false,
+            editKelasModalLoading: false,
           });
           message.success("berhasi;!");
-          this.getMapel();
+          this.getKelas();
         })
         .catch((e) => {
           message.success("gagal");
@@ -91,40 +82,39 @@ class Mapel extends Component {
 
   handleCancel = (_) => {
     this.setState({
-      editMapelModalVisible: false,
-      addMapelModalVisible: false,
+      editKelasModalVisible: false,
+      addKelasModalVisible: false,
     });
   };
 
-  handleAddMapel = (row) => {
+  handleAddKelas = (row) => {
     this.setState({
-      addMapelModalVisible: true,
+      addKelasModalVisible: true,
     });
   };
 
-  handleAddMapelOk = (_) => {
-    const { form } = this.addMapelFormRef.props;
+  handleAddKelasOk = (_) => {
+    const { form } = this.addKelasFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
-      this.setState({ addMapelModalLoading: true });
-      addMapel(values)
+      this.setState({ addKelasModalLoading: true });
+      addKelas(values)
         .then((response) => {
           form.resetFields();
           this.setState({
-            addMapelModalVisible: false,
-            addMapelModalLoading: false,
+            addKelasModalVisible: false,
+            addKelasModalLoading: false,
           });
           message.success("Berhasil!");
-          this.getMapel();
+          this.getKelas();
         })
         .catch((e) => {
           message.success("Gagal menambahkan, coba lagi!");
         });
     });
   };
-
   handleImportModalOpen = () => {
     this.setState({ importModalVisible: true });
   };
@@ -184,34 +174,34 @@ class Mapel extends Component {
   };
 
   saveImportedData = async (columnMapping) => {
-    const { importedData, mapels } = this.state;
+    const { importedData, kelas } = this.state;
     let errorCount = 0;
     
     try {
       for (const row of importedData) {
         const dataToSave = {
-          id: row[columnMapping["ID Bidang"]],
-          bidang: row[columnMapping["Nama Bidang Keahlian"]],
-          school_id: row[columnMapping["ID Sekolah"]],
+          id: row[columnMapping["ID Konsentrasi"]],
+          konsentrasi: row[columnMapping["Nama Konsentrasi Keahlian"]],
+          programKeahlian_id: row[columnMapping["ID Program"]],
         };
   
         // Check if data already exists
-        const existingMapelIndex = mapels.findIndex(p => p.id === dataToSave.id);
+        const existingKelasIndex = kelas.findIndex(p => p.id === dataToSave.id);
   
         try {
-          if (existingMapelIndex > -1) {
+          if (existingKelasIndex > -1) {
             // Update existing data
-            await editMapel(dataToSave, dataToSave.id);
+            await editKelas(dataToSave, dataToSave.id);
             this.setState((prevState) => {
-              const updatedMapel = [...prevState.mapels];
-              updatedMapel[existingMapelIndex] = dataToSave;
-              return { mapels: updatedMapel };
+              const updatedKelas = [...prevState.kelas];
+              updatedKelas[existingKelasIndex] = dataToSave;
+              return { kelas: updatedKelas };
             });
           } else {
             // Add new data
-            await addMapel(dataToSave);
+            await addKelas(dataToSave);
             this.setState((prevState) => ({
-              mapels: [...prevState.mapels, dataToSave],
+              kelas: [...prevState.kelas, dataToSave],
             }));
           }
         } catch (error) {
@@ -236,18 +226,16 @@ class Mapel extends Component {
       });
     }
   };
-
   componentDidMount() {
-    this.getMapel();
+    this.getKelas();
   }
-
   render() {
-    const { importModalVisible, mapels } = this.state;
+    const { kelas, importModalVisible } = this.state;
     const title = (
       <Row gutter={[16, 16]} justify="start" style={{paddingLeft: 9}}>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
-          <Button type="primary" onClick={this.handleAddMapel}>
-            Tambahkan Mapel
+          <Button type="primary" onClick={this.handleAddKelas}>
+            Tambahkan Kelas
           </Button>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
@@ -257,20 +245,21 @@ class Mapel extends Component {
         </Col>
       </Row>
     );
-    const cardContent = `Di sini, Anda dapat mengelola bidang keahlian di sistem, seperti menambahkan bidang keahlian baru, atau mengubah bidang keahlian yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola kelas di sistem, seperti menambahkan kelas baru, atau mengubah kelas yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Mapel" source={cardContent} />
+        <TypingCard title="Manajemen Kelas" source={cardContent} />
         <br />
         <Card title={title}>
           <Table
             bordered
             rowKey="id"
-            dataSource={mapels}
+            dataSource={kelas}
             pagination={{ pageSize: 10 }}
           >
-            <Column title="ID Mapel" dataIndex="idMapel" key="idMapel" align="center" />
-            <Column title="Nama Mapel" dataIndex="name" key="name" align="center" />
+            
+            <Column title="ID Kelas" dataIndex="idKelas" key="idKelas" align="center" />
+            <Column title="Nama Kelas" dataIndex="namaKelas" key="namaKelas" align="center" />
             {/* <Column
               title="Operasi"
               key="action"
@@ -283,7 +272,7 @@ class Mapel extends Component {
                     shape="circle"
                     icon="edit"
                     title="mengedit"
-                    onClick={this.handleEditMapel.bind(null, row)}
+                    onClick={this.handleEditKelas.bind(null, row)}
                   />
                   <Divider type="vertical" />
                   <Button
@@ -291,31 +280,31 @@ class Mapel extends Component {
                     shape="circle"
                     icon="delete"
                     title="menghapus"
-                    onClick={this.handleDeleteMapel.bind(row)}
+                    onClick={this.handleDeleteKelas.bind(null, row)}
                   />
                 </span>
               )}
             /> */}
           </Table>
         </Card>
-        <EditMapelForm
+        <EditKelasForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={(formRef) =>
-            (this.editMapelFormRef = formRef)
+            (this.editKelasFormRef = formRef)
           }
-          visible={this.state.editMapelModalVisible}
-          confirmLoading={this.state.editMapelModalLoading}
+          visible={this.state.editKelasModalVisible}
+          confirmLoading={this.state.editKelasModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleEditMapelOk}
+          onOk={this.handleEditKelasOk}
         />
-        <AddMapelForm
+        <AddKelasForm
           wrappedComponentRef={(formRef) =>
-            (this.addMapelFormRef = formRef)
+            (this.addKelasFormRef = formRef)
           }
-          visible={this.state.addMapelModalVisible}
-          confirmLoading={this.state.addMapelModalLoading}
+          visible={this.state.addKelasModalVisible}
+          confirmLoading={this.state.addKelasModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleAddMapelOk}
+          onOk={this.handleAddKelasOk}
         />
         <Modal
           title="Import File"
@@ -344,4 +333,4 @@ class Mapel extends Component {
   }
 }
 
-export default Mapel;
+export default Kelas;

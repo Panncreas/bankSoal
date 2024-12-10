@@ -15,6 +15,16 @@ export function getProgramKeahlian() {
   });
 }
 
+export function getProgramByBidang(bidangId) {
+  return request({
+    url: "/program-keahlian",
+    method: "get",
+    params: {
+      bidangId: bidangId
+    },
+  });
+}
+
 export function editProgramKeahlian(data, id) {
   return request({
     url: `/program-keahlian/${id}`,

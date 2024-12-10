@@ -15,6 +15,16 @@ export function getKonsentrasiKeahlian() {
   });
 }
 
+export function getKonsentrasiByProgram(programId) {
+  return request({
+    url: "/konsentrasi-keahlian",
+    method: "get",
+    params: {
+      programId: programId
+    },
+  });
+}
+
 export function editKonsentrasiKeahlian(data, id) {
   return request({
     url: `/konsentrasi-keahlian/${id}`,

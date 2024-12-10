@@ -160,29 +160,23 @@ class Student extends Component {
     const title = (
       <span>
         <Button type="primary" onClick={this.handleAddStudent}>
-          Tambahkan mahasiswa
+          Tambahkan siswa
         </Button>
       </span>
     );
-    const cardContent = `Di sini, Anda dapat mengelola mahasiswa di sistem, seperti menambahkan mahasiswa baru, atau mengubah mahasiswa yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola siswa di sistem, seperti menambahkan siswa baru, atau mengubah siswa yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Mahasiswa" source={cardContent} />
+        <TypingCard title="Manajemen Siswa" source={cardContent} />
         <br />
         <Card title={title}>
           <Table bordered rowKey="id" dataSource={students} pagination={false}>
-            <Column title="NIM" dataIndex="nim" key="nim" align="center" />
+            <Column title="NISN" dataIndex="nisn" key="nisn" align="center" />
             <Column title="Nama" dataIndex="name" key="name" align="center" />
             <Column
-              title="Program Studi"
-              dataIndex="studyProgram.name"
-              key="studyProgram.name"
-              align="center"
-            />
-            <Column
-              title="Telepon"
-              dataIndex="phone"
-              key="phone"
+              title="Konsentrasi Keahlian"
+              dataIndex="konsentrasiKeahlian.konsentrasi"
+              key="konsentrasiKeahlian.konsentrasi"
               align="center"
             />
             <Column

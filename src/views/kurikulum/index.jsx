@@ -1,25 +1,24 @@
 import React, { Component } from "react";
 import { Card, Button, Table, message, Upload, Row, Col, Divider, Modal, Input } from "antd";
 import {
-  getMapel,
-  deleteMapel,
-  editMapel,
-  addMapel,
-} from "@/api/mapel";
+  getKurikulum,
+  deleteKurikulum,
+  editKurikulum,
+  addKurikulum,
+} from "@/api/kurikulum";
 import TypingCard from "@/components/TypingCard";
-import EditMapelForm from "./forms/edit-mapel-form";
-import AddMapelForm from "./forms/add-mapel-form";
+import EditKurikulumForm from "./forms/edit-kurikulum-form";
+import AddKurikulumForm from "./forms/add-kurikulum-form";
 import { read, utils } from "xlsx";
-
 const { Column } = Table;
-class Mapel extends Component {
+class Kurikulum extends Component {
   state = {
-    mapels: [],
-    editMapelModalVisible: false,
-    editMapelModalLoading: false,
+    jadwalPelajaran: [],
+    editKurikulumModalVisible: false,
+    editKurikulumModalLoading: false,
     currentRowData: {},
-    addMapelModalVisible: false,
-    addMapelModalLoading: false,
+    addKurikulumModalVisible: false,
+    addKurikulumModalLoading: false,
     importedData: [],
     columnTitles: [],
     fileName: "",
@@ -28,60 +27,52 @@ class Mapel extends Component {
     columnMapping: {},
     searchKeyword: "",
   };
-
-  getMapel = async () => {
-    const result = await getMapel();
+  getKurikulum = async () => {
+    const result = await getKurikulum();
     const { content, statusCode } = result.data;
 
     if (statusCode === 200) {
       this.setState({
-        mapels: content,
+        jadwalPelajaran: content,
       });
     }
   };
-
-  handleEditMapel = (row) => {
+  handleEditKurikulum = (row) => {
     this.setState({
       currentRowData: Object.assign({}, row),
-      editMapelModalVisible: true,
+      editKurikulumModalVisible: true,
     });
   };
 
-  handleDeleteMapel = (row) => {
+  handleDeleteKurikulum = (row) => {
     const { id } = row;
-  
-    // Dialog alert hapus data
-    Modal.confirm({
-      title: "Konfirmasi",
-      content: "Apakah Anda yakin ingin menghapus data ini?",
-      okText: "Ya",
-      okType: "danger",
-      cancelText: "Tidak",
-      onOk: () => {
-        deleteMapel({ id }).then((res) => {
-          message.success("Berhasil dihapus");
-          this.getMapel();
-        });
-      },
+    if (id === "admin") {
+      message.error("不能menghapusoleh  Admin！");
+      return;
+    }
+    console.log(id);
+    deleteKurikulum({ id }).then((res) => {
+      message.success("berhasil dihapus");
+      this.getKurikulum();
     });
   };
 
-  handleEditMapelOk = (_) => {
-    const { form } = this.editMapelFormRef.props;
+  handleEditKurikulumOk = (_) => {
+    const { form } = this.editKurikulumFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
       this.setState({ editModalLoading: true });
-      editMapel(values, values.id)
+      editKurikulum(values, values.id)
         .then((response) => {
           form.resetFields();
           this.setState({
-            editMapelModalVisible: false,
-            editMapelModalLoading: false,
+            editKurikulumModalVisible: false,
+            editKurikulumModalLoading: false,
           });
           message.success("berhasi;!");
-          this.getMapel();
+          this.getKurikulum();
         })
         .catch((e) => {
           message.success("gagal");
@@ -91,40 +82,39 @@ class Mapel extends Component {
 
   handleCancel = (_) => {
     this.setState({
-      editMapelModalVisible: false,
-      addMapelModalVisible: false,
+      editKurikulumModalVisible: false,
+      addKurikulumModalVisible: false,
     });
   };
 
-  handleAddMapel = (row) => {
+  handleAddKurikulum = (row) => {
     this.setState({
-      addMapelModalVisible: true,
+      addKurikulumModalVisible: true,
     });
   };
 
-  handleAddMapelOk = (_) => {
-    const { form } = this.addMapelFormRef.props;
+  handleAddKurikulumOk = (_) => {
+    const { form } = this.addKurikulumFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
-      this.setState({ addMapelModalLoading: true });
-      addMapel(values)
+      this.setState({ addKurikulumModalLoading: true });
+      addKurikulum(values)
         .then((response) => {
           form.resetFields();
           this.setState({
-            addMapelModalVisible: false,
-            addMapelModalLoading: false,
+            addKurikulumModalVisible: false,
+            addKurikulumModalLoading: false,
           });
           message.success("Berhasil!");
-          this.getMapel();
+          this.getKurikulum();
         })
         .catch((e) => {
           message.success("Gagal menambahkan, coba lagi!");
         });
     });
   };
-
   handleImportModalOpen = () => {
     this.setState({ importModalVisible: true });
   };
@@ -184,34 +174,34 @@ class Mapel extends Component {
   };
 
   saveImportedData = async (columnMapping) => {
-    const { importedData, mapels } = this.state;
+    const { importedData, jadwalPelajaran } = this.state;
     let errorCount = 0;
     
     try {
       for (const row of importedData) {
         const dataToSave = {
-          id: row[columnMapping["ID Bidang"]],
-          bidang: row[columnMapping["Nama Bidang Keahlian"]],
-          school_id: row[columnMapping["ID Sekolah"]],
+          id: row[columnMapping["ID Konsentrasi"]],
+          konsentrasi: row[columnMapping["Nama Konsentrasi Keahlian"]],
+          programKeahlian_id: row[columnMapping["ID Program"]],
         };
   
         // Check if data already exists
-        const existingMapelIndex = mapels.findIndex(p => p.id === dataToSave.id);
+        const existingKurikulumIndex = jadwalPelajaran.findIndex(p => p.id === dataToSave.id);
   
         try {
-          if (existingMapelIndex > -1) {
+          if (existingKurikulumIndex > -1) {
             // Update existing data
-            await editMapel(dataToSave, dataToSave.id);
+            await editKurikulum(dataToSave, dataToSave.id);
             this.setState((prevState) => {
-              const updatedMapel = [...prevState.mapels];
-              updatedMapel[existingMapelIndex] = dataToSave;
-              return { mapels: updatedMapel };
+              const updatedKurikulum = [...prevState.jadwalPelajaran];
+              updatedKurikulum[existingKurikulumIndex] = dataToSave;
+              return { jadwalPelajaran: updatedKurikulum };
             });
           } else {
             // Add new data
-            await addMapel(dataToSave);
+            await addKurikulum(dataToSave);
             this.setState((prevState) => ({
-              mapels: [...prevState.mapels, dataToSave],
+              jadwalPelajaran: [...prevState.jadwalPelajaran, dataToSave],
             }));
           }
         } catch (error) {
@@ -236,18 +226,16 @@ class Mapel extends Component {
       });
     }
   };
-
   componentDidMount() {
-    this.getMapel();
+    this.getKurikulum();
   }
-
   render() {
-    const { importModalVisible, mapels } = this.state;
+    const { jadwalPelajaran, importModalVisible } = this.state;
     const title = (
       <Row gutter={[16, 16]} justify="start" style={{paddingLeft: 9}}>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
-          <Button type="primary" onClick={this.handleAddMapel}>
-            Tambahkan Mapel
+          <Button type="primary" onClick={this.handleAddKurikulum}>
+            Tambahkan Jadwal Pelajaran
           </Button>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
@@ -257,20 +245,23 @@ class Mapel extends Component {
         </Col>
       </Row>
     );
-    const cardContent = `Di sini, Anda dapat mengelola bidang keahlian di sistem, seperti menambahkan bidang keahlian baru, atau mengubah bidang keahlian yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola jadwal pelajaran di sistem, seperti menambahkan jadwal pelajaran baru, atau mengubah jadwal pelajaran yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Mapel" source={cardContent} />
+        <TypingCard title="Manajemen Jadwal Pelajaran" source={cardContent} />
         <br />
         <Card title={title}>
           <Table
             bordered
             rowKey="id"
-            dataSource={mapels}
+            dataSource={jadwalPelajaran}
             pagination={{ pageSize: 10 }}
           >
-            <Column title="ID Mapel" dataIndex="idMapel" key="idMapel" align="center" />
-            <Column title="Nama Mapel" dataIndex="name" key="name" align="center" />
+            
+            <Column title="Guru Pengajar" dataIndex="lecture.name" key="lecture.name" align="center" />
+            <Column title="Jabatan" dataIndex="jabatan" key="jabatan" align="center" />
+            <Column title="Mata Pelajaran" dataIndex="mapel.name" key="mapel.name" align="center" />
+            <Column title="Jam Pelajaran" dataIndex="jmlJam" key="jmlJam" align="center" />
             {/* <Column
               title="Operasi"
               key="action"
@@ -283,7 +274,7 @@ class Mapel extends Component {
                     shape="circle"
                     icon="edit"
                     title="mengedit"
-                    onClick={this.handleEditMapel.bind(null, row)}
+                    onClick={this.handleEditKurikulum.bind(null, row)}
                   />
                   <Divider type="vertical" />
                   <Button
@@ -291,31 +282,31 @@ class Mapel extends Component {
                     shape="circle"
                     icon="delete"
                     title="menghapus"
-                    onClick={this.handleDeleteMapel.bind(row)}
+                    onClick={this.handleDeleteKurikulum.bind(null, row)}
                   />
                 </span>
               )}
             /> */}
           </Table>
         </Card>
-        <EditMapelForm
+        <EditKurikulumForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={(formRef) =>
-            (this.editMapelFormRef = formRef)
+            (this.editKurikulumFormRef = formRef)
           }
-          visible={this.state.editMapelModalVisible}
-          confirmLoading={this.state.editMapelModalLoading}
+          visible={this.state.editKurikulumModalVisible}
+          confirmLoading={this.state.editKurikulumModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleEditMapelOk}
+          onOk={this.handleEditKurikulumOk}
         />
-        <AddMapelForm
+        <AddKurikulumForm
           wrappedComponentRef={(formRef) =>
-            (this.addMapelFormRef = formRef)
+            (this.addKurikulumFormRef = formRef)
           }
-          visible={this.state.addMapelModalVisible}
-          confirmLoading={this.state.addMapelModalLoading}
+          visible={this.state.addKurikulumModalVisible}
+          confirmLoading={this.state.addKurikulumModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleAddMapelOk}
+          onOk={this.handleAddKurikulumOk}
         />
         <Modal
           title="Import File"
@@ -344,4 +335,4 @@ class Mapel extends Component {
   }
 }
 
-export default Mapel;
+export default Kurikulum;

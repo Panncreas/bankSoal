@@ -3,7 +3,7 @@ import { Form, Input, Modal, Select } from "antd";
 import {getProgramKeahlian} from '@/api/programKeahlian'
 const { TextArea } = Input;
 const { Option } = Select;
-class AddKonsentrasiKeahlianForm extends Component {
+class EditKelasForm extends Component {
   state = {
     programList: []
   };
@@ -29,9 +29,10 @@ class AddKonsentrasiKeahlianForm extends Component {
     this.fetchProgramKeahlianList();
   }
   render() {
-    const { visible, onCancel, onOk, form, confirmLoading } = this.props;
+    const { visible, onCancel, onOk, form, confirmLoading, currentRowData } = this.props;
     const { programList} = this.state;
     const { getFieldDecorator } = form;
+    const { id, name, description } = currentRowData;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -44,7 +45,7 @@ class AddKonsentrasiKeahlianForm extends Component {
     };
     return (
       <Modal
-        title="Tambah Konsentrasi Keahlian"
+        title="Edit Konsentrasi Keahlian"
         visible={visible}
         onCancel={onCancel}
         onOk={onOk}
@@ -69,7 +70,7 @@ class AddKonsentrasiKeahlianForm extends Component {
             })(<Input placeholder="Konsentrasi Keahlian" />)}
           </Form.Item>
           <Form.Item label="Program Keahlian:">
-            {getFieldDecorator("programKeahlian_id", {
+            {getFieldDecorator("programkeahlian_id", {
               rules: [
                 { required: true, message: "Silahkan isi program keahlian" },
               ],
@@ -89,4 +90,4 @@ class AddKonsentrasiKeahlianForm extends Component {
   }
 }
 
-export default Form.create({ name: "AddKonsentrasiKeahlianForm" })(AddKonsentrasiKeahlianForm);
+export default Form.create({ name: "EditKelasForm" })(EditKelasForm);

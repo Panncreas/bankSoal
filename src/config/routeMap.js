@@ -311,7 +311,34 @@ const KonsentrasiKeahlian = Loadable({
   loader: () => import(/*webpackChunkName:'KonsentrasiKeahlian'*/ "@/views/konsentrasi-keahlian"),
   loading: Loading,
 });
-
+const JadwalPelajaran = Loadable({
+  loader: () => import(/*webpackChunkName:'jadwalPelajaran'*/ "@/views/jadwal-pelajaran"),
+  loading: Loading,
+});
+const Kelas = Loadable({
+  loader: () => import(/*webpackChunkName:'kelas'*/ "@/views/kelas"),
+  loading: Loading,
+});
+const TahunAjaran = Loadable({
+  loader: () => import(/*webpackChunkName:'TahunAjaran'*/ "@/views/tahun-ajaran"),
+  loading: Loading,
+});
+const Season = Loadable({
+  loader: () => import(/*webpackChunkName:'Season'*/ "@/views/season"),
+  loading: Loading,
+});
+const Kurikulum = Loadable({
+  loader: () => import(/*webpackChunkName:'Kurikulum'*/ "@/views/kurikulum"),
+  loading: Loading,
+});
+const ACP = Loadable({
+  loader: () => import(/*webpackChunkName:'AnalisaCapaianPembelajaran'*/ "@/views/acp"),
+  loading: Loading,
+});
+const ATP = Loadable({
+  loader: () => import(/*webpackChunkName:'AlurTujuanPembelajaran'*/ "@/views/atp"),
+  loading: Loading,
+});
 const Grade = Loadable({
   loader: () => import(/*webpackChunkName:'Grade'*/ "@/views/grade"),
   loading: Loading,
@@ -433,18 +460,25 @@ export default [
   { path: "/program-keahlian", component: ProgramKeahlian, roles: ["ROLE_ADMINISTRATOR"] },
   { path: "/konsentrasi-keahlian", component: KonsentrasiKeahlian, roles: ["ROLE_ADMINISTRATOR"] },
   { path: "/department", component: Department, roles: ["ROLE_OPERATOR"] },
+  { path: "/kelas", component: Kelas, roles: ["ROLE_OPERATOR"] },
+  { path: "/tahun-ajaran", component: TahunAjaran, roles: ["ROLE_OPERATOR"] },
+  { path: "/season", component: Season, roles: ["ROLE_OPERATOR"] },
+  { path: "/acp", component: ACP, roles: ["ROLE_OPERATOR"] },
+  { path: "/atp", component: ATP, roles: ["ROLE_OPERATOR"] },
   {
     path: "/study-program",
     component: StudyProgram,
     roles: ["ROLE_OPERATOR"],
   },
   { path: "/religion", component: Religion, roles: ["ROLE_OPERATOR"] },
-  {
-    path: "/subject-group",
-    component: SubjectGroup,
-    roles: ["ROLE_OPERATOR"],
-  },
+  // {
+  //   path: "/subject-group",
+  //   component: SubjectGroup,
+  //   roles: ["ROLE_OPERATOR"],
+  // },
   { path: "/subject", component: Subject, roles: ["ROLE_OPERATOR"] },
+  { path: "/jadwal-pelajaran", component: JadwalPelajaran, roles: ["ROLE_OPERATOR"] },
+  { path: "/kurikulum", component: Kurikulum, roles: ["ROLE_OPERATOR"] },
   { path: "/lecture", component: Lecture, roles: ["ROLE_OPERATOR"] },
   {
     path: "/question-criteria",

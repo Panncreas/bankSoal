@@ -1,7 +1,88 @@
 import React, { Component } from "react";
 import { Form, Input, Modal, DatePicker, Select } from "antd";
+import { getBidangKeahlian } from "@/api/bidangKeahlian";
+import { getProgramByBidang } from "@/api/programKeahlian";
+import { getKonsentrasiByProgram } from "@/api/konsentrasiKeahlian";
 const { TextArea } = Input;
+const { Option } = Select;
 class AddStudentForm extends Component {
+  state = {
+    bidangList: [],
+    filteredProgramList: [],
+    filteredKonsentrasiList: []
+  };
+  fetchBidangKeahlianList = async () => {
+    try {
+      const result = await getBidangKeahlian();
+      const { content, statusCode } = result.data;
+      if (statusCode === 200) {
+        const bidangList = content.map((bidang) => ({
+          id: bidang.id,
+          bidang: bidang.bidang,
+        }));
+        this.setState({ bidangList });
+      }
+    } catch (error) {
+      console.error("Error fetching bidang data: ", error);
+    }
+  };
+
+  handleBidangChange = async (value) => {
+    try {
+      // Ambil program yang sesuai dengan bidang yang dipilih
+      const result = await getProgramByBidang(value);
+      const { content, statusCode } = result.data;
+
+      if (statusCode === 200) {
+        this.setState({
+          filteredProgramList: content,
+          filteredKonsentrasiList: [], // Reset konsentrasi list ketika bidang berubah
+        });
+      } else {
+        this.setState({
+          filteredProgramList: [],
+          filteredKonsentrasiList: [],
+        });
+      }
+
+      // Reset dropdown nilai program dan konsentrasi
+      this.props.form.setFieldsValue({
+        programkeahlian_id: undefined,
+        konsentrasikeahlian_id: undefined,
+      });
+    } catch (error) {
+      console.error("Error fetching program data: ", error);
+    }
+  };
+
+  handleProgramChange = async (value) => {
+    try {
+      // Ambil konsentrasi yang sesuai dengan program yang dipilih
+      const result = await getKonsentrasiByProgram(value); // Memanggil API dengan program ID
+      const { content, statusCode } = result.data;
+
+      if (statusCode === 200) {
+        this.setState({
+          filteredKonsentrasiList: content,
+        });
+      } else {
+        this.setState({
+          filteredKonsentrasiList: [],
+        });
+      }
+
+      // Reset dropdown nilai konsentrasi
+      this.props.form.setFieldsValue({
+        konsentrasikeahlian_id: undefined,
+      });
+    } catch (error) {
+      console.error("Error fetching konsentrasi data: ", error);
+    }
+  };
+
+  componentDidMount (){
+    this.fetchBidangKeahlianList();
+  }
   render() {
     const {
       visible,
@@ -10,10 +91,12 @@ class AddStudentForm extends Component {
       form,
       confirmLoading,
       religion,
-      user,
-      studyProgram,
     } = this.props;
     const { getFieldDecorator } = form;
+    const {
+      bidangList,
+      filteredProgramList,
+      filteredKonsentrasiList,} = this.state
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -26,17 +109,24 @@ class AddStudentForm extends Component {
     };
     return (
       <Modal
-        title="mengedit"
+        title="Tambah Siswa"
         visible={visible}
         onCancel={onCancel}
         onOk={onOk}
         confirmLoading={confirmLoading}
       >
         <Form {...formItemLayout}>
-          <Form.Item label="NIM:">
-            {getFieldDecorator("nim", {
-              rules: [{ required: true, message: "NIM wajib diisi" }],
-            })(<Input placeholder="NIM" />)}
+          <Form.Item label="ID Siswa:">
+            {getFieldDecorator("id", {
+              rules: [
+                { required: true, message: "Silahkan isikan id siswa" },
+              ],
+            })(<Input placeholder="ID Siswa" />)}
+          </Form.Item>
+          <Form.Item label="NISN:">
+            {getFieldDecorator("nisn", {
+              rules: [{ required: true, message: "NISN wajib diisi" }],
+            })(<Input placeholder="NISN" />)}
           </Form.Item>
           <Form.Item label="Nama Lengkap:">
             {getFieldDecorator("name", {
@@ -98,46 +188,57 @@ class AddStudentForm extends Component {
               </Select>
             )}
           </Form.Item>
-          <Form.Item label="Program Study (Prodi):">
-            {getFieldDecorator("study_program_id", {
-              rules: [
-                {
-                  required: true,
-                  message: "Silahkan pilih prodi",
-                },
-              ],
-            })(
-              <Select style={{ width: 300 }} placeholder="Pilih Prodi">
-                {studyProgram.map((arr, key) => {
-                  return (
-                    <Select.Option value={arr.id} key={"study-program-" + key}>
-                      {arr.name}
-                    </Select.Option>
-                  );
-                })}
+          <Form.Item label="Bidang Keahlian:" htmlFor="bidangkeahlian_id">
+            {getFieldDecorator("bidangKeahlian_id", {
+                rules: [
+                    { required: true, message: "Silahkan isi konsentrasi keahlian" },
+                ],
+                })(
+              <Select
+                placeholder="Pilih Bidang Keahlian"
+                onChange={this.handleBidangChange}
+              >
+                {this.state.bidangList.map((bidang) => (
+                  <Option key={bidang.id} value={bidang.id}>
+                    {bidang.bidang}
+                  </Option>
+                ))}
               </Select>
             )}
           </Form.Item>
-          <Form.Item label="Akun untuk login:">
-            {getFieldDecorator("user_id", {
+          <Form.Item label="Program Keahlian:" htmlFor="programkeahlian_id">
+            {getFieldDecorator("programKeahlian_id", {
+                rules: [
+                    { required: true, message: "Silahkan isi konsentrasi keahlian" },
+                ],
+                })(
+              <Select
+                placeholder="Pilih Program Keahlian"
+                onChange={this.handleProgramChange}
+              >
+                {filteredProgramList.map((program) => (
+                  <Option key={program.id} value={program.id}>
+                    {program.program}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+
+          <Form.Item label="Konsentrasi Keahlian:" htmlFor="konsentrasikeahlian_id">
+            {getFieldDecorator("konsentrasiKeahlian_id", {
               rules: [
-                {
-                  required: true,
-                  message: "Silahkan pilih akun untuk login",
-                },
+                { required: true, message: "Silahkan isi konsentrasi keahlian" },
               ],
             })(
               <Select
-                style={{ width: 300 }}
-                placeholder="Pilih akun untuk login"
+                placeholder="Pilih Konsentrasi Keahlian"
               >
-                {user.map((arr, key) => {
-                  return (
-                    <Select.Option value={arr.id} key={"user-" + key}>
-                      {arr.name}
-                    </Select.Option>
-                  );
-                })}
+                {filteredKonsentrasiList.map((konsentrasi) => (
+                  <Option key={konsentrasi.id} value={konsentrasi.id}>
+                    {konsentrasi.konsentrasi}
+                  </Option>
+                ))}
               </Select>
             )}
           </Form.Item>

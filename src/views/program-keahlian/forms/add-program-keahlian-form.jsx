@@ -69,7 +69,7 @@ class AddProgramKeahlianForm extends Component {
             })(<Input placeholder="Program Keahlian" />)}
           </Form.Item>
           <Form.Item label="Bidang Keahlian:">
-            {getFieldDecorator("bidangkeahlian_id", {
+            {getFieldDecorator("bidangKeahlian_id", {
               rules: [
                 { required: true, message: "Silahkan isi bidang keahlian" },
               ],

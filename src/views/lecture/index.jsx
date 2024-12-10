@@ -162,14 +162,14 @@ class Lecture extends Component {
     const title = (
       <span>
         <Button type="primary" onClick={this.handleAddLecture}>
-          Tambahkan dosen
+          Tambahkan guru
         </Button>
       </span>
     );
-    const cardContent = `Di sini, Anda dapat mengelola dosen di sistem, seperti menambahkan dosen baru, atau mengubah dosen yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola guru di sistem, seperti menambahkan guru baru, atau mengubah guru yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Dosen" source={cardContent} />
+        <TypingCard title="Manajemen Guru" source={cardContent} />
         <br />
         <Card title={title}>
           <Table bordered rowKey="id" dataSource={lectures} pagination={false}>

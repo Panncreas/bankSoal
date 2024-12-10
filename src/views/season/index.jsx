@@ -1,25 +1,24 @@
 import React, { Component } from "react";
 import { Card, Button, Table, message, Upload, Row, Col, Divider, Modal, Input } from "antd";
 import {
-  getMapel,
-  deleteMapel,
-  editMapel,
-  addMapel,
-} from "@/api/mapel";
+  getSeason,
+  deleteSeason,
+  editSeason,
+  addSeason,
+} from "@/api/season";
 import TypingCard from "@/components/TypingCard";
-import EditMapelForm from "./forms/edit-mapel-form";
-import AddMapelForm from "./forms/add-mapel-form";
+import EditSeasonForm from "./forms/edit-season-form";
+import AddSeasonForm from "./forms/add-season-form";
 import { read, utils } from "xlsx";
-
 const { Column } = Table;
-class Mapel extends Component {
+class Season extends Component {
   state = {
-    mapels: [],
-    editMapelModalVisible: false,
-    editMapelModalLoading: false,
+    season: [],
+    editSeasonModalVisible: false,
+    editSeasonModalLoading: false,
     currentRowData: {},
-    addMapelModalVisible: false,
-    addMapelModalLoading: false,
+    addSeasonModalVisible: false,
+    addSeasonModalLoading: false,
     importedData: [],
     columnTitles: [],
     fileName: "",
@@ -28,60 +27,52 @@ class Mapel extends Component {
     columnMapping: {},
     searchKeyword: "",
   };
-
-  getMapel = async () => {
-    const result = await getMapel();
+  getSeason = async () => {
+    const result = await getSeason();
     const { content, statusCode } = result.data;
 
     if (statusCode === 200) {
       this.setState({
-        mapels: content,
+        season: content,
       });
     }
   };
-
-  handleEditMapel = (row) => {
+  handleEditSeason = (row) => {
     this.setState({
       currentRowData: Object.assign({}, row),
-      editMapelModalVisible: true,
+      editSeasonModalVisible: true,
     });
   };
 
-  handleDeleteMapel = (row) => {
+  handleDeleteSeason = (row) => {
     const { id } = row;
-  
-    // Dialog alert hapus data
-    Modal.confirm({
-      title: "Konfirmasi",
-      content: "Apakah Anda yakin ingin menghapus data ini?",
-      okText: "Ya",
-      okType: "danger",
-      cancelText: "Tidak",
-      onOk: () => {
-        deleteMapel({ id }).then((res) => {
-          message.success("Berhasil dihapus");
-          this.getMapel();
-        });
-      },
+    if (id === "admin") {
+      message.error("不能menghapusoleh  Admin！");
+      return;
+    }
+    console.log(id);
+    deleteSeason({ id }).then((res) => {
+      message.success("berhasil dihapus");
+      this.getSeason();
     });
   };
 
-  handleEditMapelOk = (_) => {
-    const { form } = this.editMapelFormRef.props;
+  handleEditSeasonOk = (_) => {
+    const { form } = this.editSeasonFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
       this.setState({ editModalLoading: true });
-      editMapel(values, values.id)
+      editSeason(values, values.id)
         .then((response) => {
           form.resetFields();
           this.setState({
-            editMapelModalVisible: false,
-            editMapelModalLoading: false,
+            editSeasonModalVisible: false,
+            editSeasonModalLoading: false,
           });
           message.success("berhasi;!");
-          this.getMapel();
+          this.getSeason();
         })
         .catch((e) => {
           message.success("gagal");
@@ -91,40 +82,48 @@ class Mapel extends Component {
 
   handleCancel = (_) => {
     this.setState({
-      editMapelModalVisible: false,
-      addMapelModalVisible: false,
+      editSeasonModalVisible: false,
+      addSeasonModalVisible: false,
     });
   };
 
-  handleAddMapel = (row) => {
+  handleAddSeason = (row) => {
     this.setState({
-      addMapelModalVisible: true,
+      addSeasonModalVisible: true,
     });
   };
 
-  handleAddMapelOk = (_) => {
-    const { form } = this.addMapelFormRef.props;
+  handleAddSeasonOk = (_) => {
+    const { form } = this.addSeasonFormRef.props;
     form.validateFields((err, values) => {
       if (err) {
         return;
       }
-      this.setState({ addMapelModalLoading: true });
-      addMapel(values)
+      this.setState({ addSeasonModalLoading: true });
+      const payload = {
+        ...values,
+        student_id: Array.isArray(values.student_id)
+          ? values.student_id.filter((id) => id !== null)
+          : [],
+        jadwalPelajaran_id: Array.isArray(values.jadwalPelajaran_id)
+          ? values.jadwalPelajaran_id.filter((idJadwal) => idJadwal !== null)
+          : [],
+      };
+      addSeason(payload)
         .then((response) => {
           form.resetFields();
           this.setState({
-            addMapelModalVisible: false,
-            addMapelModalLoading: false,
+            addSeasonModalVisible: false,
+            addSeasonModalLoading: false,
           });
           message.success("Berhasil!");
-          this.getMapel();
+          this.getSeason();
         })
         .catch((e) => {
           message.success("Gagal menambahkan, coba lagi!");
         });
     });
   };
-
   handleImportModalOpen = () => {
     this.setState({ importModalVisible: true });
   };
@@ -184,34 +183,34 @@ class Mapel extends Component {
   };
 
   saveImportedData = async (columnMapping) => {
-    const { importedData, mapels } = this.state;
+    const { importedData, season } = this.state;
     let errorCount = 0;
     
     try {
       for (const row of importedData) {
         const dataToSave = {
-          id: row[columnMapping["ID Bidang"]],
-          bidang: row[columnMapping["Nama Bidang Keahlian"]],
-          school_id: row[columnMapping["ID Sekolah"]],
+          id: row[columnMapping["ID Konsentrasi"]],
+          konsentrasi: row[columnMapping["Nama Konsentrasi Keahlian"]],
+          programKeahlian_id: row[columnMapping["ID Program"]],
         };
   
         // Check if data already exists
-        const existingMapelIndex = mapels.findIndex(p => p.id === dataToSave.id);
+        const existingSeasonIndex = season.findIndex(p => p.id === dataToSave.id);
   
         try {
-          if (existingMapelIndex > -1) {
+          if (existingSeasonIndex > -1) {
             // Update existing data
-            await editMapel(dataToSave, dataToSave.id);
+            await editSeason(dataToSave, dataToSave.id);
             this.setState((prevState) => {
-              const updatedMapel = [...prevState.mapels];
-              updatedMapel[existingMapelIndex] = dataToSave;
-              return { mapels: updatedMapel };
+              const updatedSeason = [...prevState.season];
+              updatedSeason[existingSeasonIndex] = dataToSave;
+              return { season: updatedSeason };
             });
           } else {
             // Add new data
-            await addMapel(dataToSave);
+            await addSeason(dataToSave);
             this.setState((prevState) => ({
-              mapels: [...prevState.mapels, dataToSave],
+              season: [...prevState.season, dataToSave],
             }));
           }
         } catch (error) {
@@ -236,18 +235,16 @@ class Mapel extends Component {
       });
     }
   };
-
   componentDidMount() {
-    this.getMapel();
+    this.getSeason();
   }
-
   render() {
-    const { importModalVisible, mapels } = this.state;
+    const { season, importModalVisible } = this.state;
     const title = (
       <Row gutter={[16, 16]} justify="start" style={{paddingLeft: 9}}>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
-          <Button type="primary" onClick={this.handleAddMapel}>
-            Tambahkan Mapel
+          <Button type="primary" onClick={this.handleAddSeason}>
+            Tambahkan Kelas
           </Button>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6} xl={6}>
@@ -257,20 +254,27 @@ class Mapel extends Component {
         </Col>
       </Row>
     );
-    const cardContent = `Di sini, Anda dapat mengelola bidang keahlian di sistem, seperti menambahkan bidang keahlian baru, atau mengubah bidang keahlian yang sudah ada di sistem.`;
+    const cardContent = `Di sini, Anda dapat mengelola kelas di sistem, seperti menambahkan kelas baru, atau mengubah kelas yang sudah ada di sistem.`;
     return (
       <div className="app-container">
-        <TypingCard title="Manajemen Mapel" source={cardContent} />
+        <TypingCard title="Manajemen Kelas Ajaran" source={cardContent} />
         <br />
         <Card title={title}>
           <Table
             bordered
             rowKey="id"
-            dataSource={mapels}
+            dataSource={season}
             pagination={{ pageSize: 10 }}
           >
-            <Column title="ID Mapel" dataIndex="idMapel" key="idMapel" align="center" />
-            <Column title="Nama Mapel" dataIndex="name" key="name" align="center" />
+            
+            <Column title="Tahun Ajaran" dataIndex="tahunAjaran.tahunAjaran" key="tahunAjaran.tahunAjaran" align="center" />
+            <Column title="Bidang Keahlian" dataIndex="bidangKeahlian.bidang" key="bidangKeahlian.bidang" align="center" />
+            <Column title="Program Keahlian" dataIndex="programKeahlian.program" key="programKeahlian.program" align="center" />
+            <Column title="Konsentrasi Keahlian" dataIndex="konsentrasiKeahlian.konsentrasi" key="konsentrasiKeahlian.konsentrasi" align="center" />
+            <Column title="Kelas" dataIndex="kelas.namaKelas" key="kelas.namaKelas" align="center" />
+            <Column title="Wali Kelas" dataIndex="lecture.name" key="lecture.name" align="center" />
+            <Column title="Siswa" dataIndex="student" key="student" align="center" />
+            <Column title="Mata Pelajaran" dataIndex="jadwalPelajaran" key="jadwalPelajaran" align="center" />
             {/* <Column
               title="Operasi"
               key="action"
@@ -283,7 +287,7 @@ class Mapel extends Component {
                     shape="circle"
                     icon="edit"
                     title="mengedit"
-                    onClick={this.handleEditMapel.bind(null, row)}
+                    onClick={this.handleEditSeason.bind(null, row)}
                   />
                   <Divider type="vertical" />
                   <Button
@@ -291,31 +295,31 @@ class Mapel extends Component {
                     shape="circle"
                     icon="delete"
                     title="menghapus"
-                    onClick={this.handleDeleteMapel.bind(row)}
+                    onClick={this.handleDeleteSeason.bind(null, row)}
                   />
                 </span>
               )}
             /> */}
           </Table>
         </Card>
-        <EditMapelForm
+        <EditSeasonForm
           currentRowData={this.state.currentRowData}
           wrappedComponentRef={(formRef) =>
-            (this.editMapelFormRef = formRef)
+            (this.editSeasonFormRef = formRef)
           }
-          visible={this.state.editMapelModalVisible}
-          confirmLoading={this.state.editMapelModalLoading}
+          visible={this.state.editSeasonModalVisible}
+          confirmLoading={this.state.editSeasonModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleEditMapelOk}
+          onOk={this.handleEditSeasonOk}
         />
-        <AddMapelForm
+        <AddSeasonForm
           wrappedComponentRef={(formRef) =>
-            (this.addMapelFormRef = formRef)
+            (this.addSeasonFormRef = formRef)
           }
-          visible={this.state.addMapelModalVisible}
-          confirmLoading={this.state.addMapelModalLoading}
+          visible={this.state.addSeasonModalVisible}
+          confirmLoading={this.state.addSeasonModalLoading}
           onCancel={this.handleCancel}
-          onOk={this.handleAddMapelOk}
+          onOk={this.handleAddSeasonOk}
         />
         <Modal
           title="Import File"
@@ -344,4 +348,4 @@ class Mapel extends Component {
   }
 }
 
-export default Mapel;
+export default Season;
